@@ -14,64 +14,19 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             using (var items = new DB_Context()){
-
-                using (var tran_items = items.Database.BeginTransaction())
+                var eager = items.Order.Include(n => n.orderitem).ThenInclude(n => n.product);
+                foreach(var item in eager)
                 {
-                    CLsProduct product = null;
-                    int product_id;
-                    do
+                    Console.WriteLine(item.id);
+                    Console.WriteLine(item.CustomerName);
+                    foreach(var item2 in item.orderitem)
                     {
-                        Console.WriteLine("Please enter Product id :");
-                         product_id = int.Parse(Console.ReadLine());
-                         product = items.Product.Find(product_id);
-                    }
-                    while(product == null);
-                    Console.WriteLine("Please enter How much you want :");
-                    int product_want_num = int.Parse(Console.ReadLine());
-
-                    if (product.stockQty >= product_want_num)
-                    {
-                        product.stockQty -=product_want_num;
-                    }
-                    else
-                    {
-                        Console.WriteLine("the stock is small then you want ");
-                        return;
-                    }
-
-                    var order_items_list = new List<ClsOrderItem>()
-                    {
-                        new ClsOrderItem
-                        {
-                            Productid = product.id,
-                            UnitPrice =product.price,
-                            Qty=product_want_num
-                        }
-                    };
-
-                    
-                    decimal total = order_items_list.Sum(n => n.Qty * n.UnitPrice);
-
-
-
-                    var order = new ClsOrder
-                    {
-
-                        CustomerName = "Moamen Hussien",
-                        Createdat = DateTime.Now,
-                        Total = total,
-                        orderitem = order_items_list
-
-                    };
-                   
-                    items.Order.Add(order);
-                    if(items.SaveChanges()>0)
-                    {
-                        Console.WriteLine("The Order is Created sucssfully");
-                        tran_items.Commit();
-
+                        Console.WriteLine($"The id {item2.Orderid}the quantity is {item2.Qty} The Price is {item2.UnitPrice}");
+                        Console.WriteLine(item2.product.id);
+                        Console.WriteLine(item2.product.name);
                     }
                 }
+                             
             }
         }
     }
