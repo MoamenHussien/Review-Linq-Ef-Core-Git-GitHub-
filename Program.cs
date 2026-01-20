@@ -16,15 +16,10 @@ namespace ConsoleApp1
         {
             using (var items = new DB_Context()) {
 
-                var count = items.Product.GroupBy(n => n.categoryid).Select(x => new { CategoryName = items.Category.First(n => n.id == x.Key).name, Prodcut_count = x.Count() });
-                var avgprice = items.Product.GroupBy(n => n.categoryid).Select(x => new {CategoryName =items.Category.First(n=>n.id==x.Key).name,AvgPrice =x.Average(n=>n.price) });
-                var MaxPrice = items.Product.GroupBy(n => n.categoryid).Select(x => new {CategoryName =items.Category.First(n=>n.id==x.Key).name,MaxPrice =x.Max(n=>n.price) });
-                var TotalStockQty = items.Product.GroupBy(n => n.categoryid).Select(x => new {CategoryName =items.Category.First(n=>n.id==x.Key).name,TotalQty =x.Sum(n=>n.stockQty) });
-
-
-                foreach(var item in TotalStockQty)
+               var join_test = items.OrderItem.AsNoTracking().Select(n => new {order_id =n.Orderid,product_name =n.product.name,category_name =n.product.category.name , Subtotal=n.Qty*n.UnitPrice });
+                foreach(var item in join_test)
                 {
-                    Console.WriteLine($"{item.CategoryName,-15}     {item.TotalQty}") ;
+                    Console.WriteLine($"{item.order_id,-5}{item.product_name,-13} {item.category_name,-8} {item.Subtotal,-5}");
                 }
             }
         }
