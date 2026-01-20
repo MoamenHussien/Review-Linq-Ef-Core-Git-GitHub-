@@ -15,18 +15,16 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             using (var items = new DB_Context()) {
-             var projection_testitems = items.Product.Select(n => new
-                                        {
-                                            product_id = n.id,
-                                            product_name = n.name,
-                                            product_category_name = n.category.name,
-                                            product_price = n.price,
-                                            InStock = n.stockQty > 0
-                                        }).ToList();
 
-                foreach(var item in projection_testitems)
+                var count = items.Product.GroupBy(n => n.categoryid).Select(x => new { CategoryName = items.Category.First(n => n.id == x.Key).name, Prodcut_count = x.Count() });
+                var avgprice = items.Product.GroupBy(n => n.categoryid).Select(x => new {CategoryName =items.Category.First(n=>n.id==x.Key).name,AvgPrice =x.Average(n=>n.price) });
+                var MaxPrice = items.Product.GroupBy(n => n.categoryid).Select(x => new {CategoryName =items.Category.First(n=>n.id==x.Key).name,MaxPrice =x.Max(n=>n.price) });
+                var TotalStockQty = items.Product.GroupBy(n => n.categoryid).Select(x => new {CategoryName =items.Category.First(n=>n.id==x.Key).name,TotalQty =x.Sum(n=>n.stockQty) });
+
+
+                foreach(var item in TotalStockQty)
                 {
-                    Console.WriteLine($"{item.product_id,-5} {item.product_name,-14} {item.product_category_name,-8} {item.product_price,-9} {item.InStock}");
+                    Console.WriteLine($"{item.CategoryName,-15}     {item.TotalQty}") ;
                 }
             }
         }
