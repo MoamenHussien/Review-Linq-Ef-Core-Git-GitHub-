@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
+using System.Globalization;
 using System.Threading.Channels;
 
 namespace ConsoleApp1
@@ -14,16 +15,28 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             using (var items = new DB_Context()){
-
-                var q_one = items.Category.Where(n => n.name.StartsWith("ph"));
-                var q_two = items.Product.Where(n=>n.price>=500 && n.price<=5000);
-                var q_three = items.Product.OrderBy(n => n.price).ThenBy(n => n.name);
-
-
-                foreach (var item in q_three)
+                string want;
+                do
                 {
-                    Console.WriteLine($"{item.name}    {item.price}");
+                    int page_size = 5;
+                    int products_size = items.Product.Count();
+                    decimal pages_num = Math.Ceiling( (decimal) products_size / page_size);
+
+                    Console.WriteLine($"Enter The Page index you want from 1 to {pages_num} :");
+                    byte page_index = byte.Parse(Console.ReadLine());
+                    Console.WriteLine();
+
+                    var pagging = items.Product.Skip((page_index-1) * page_size).Take(page_size);
+                    foreach(var item in pagging)
+                    {
+                        Console.WriteLine(item.name    , item.price);
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine($"Do you Want another pagging Y or N ? :");
+                     want = Console.ReadLine();
+                    Console.Clear();
                 }
+                while (want=="Y");
             }
         }
     }
