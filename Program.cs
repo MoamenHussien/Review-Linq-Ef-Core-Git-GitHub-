@@ -14,29 +14,20 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            using (var items = new DB_Context()){
-                string want;
-                do
+            using (var items = new DB_Context()) {
+             var projection_testitems = items.Product.Select(n => new
+                                        {
+                                            product_id = n.id,
+                                            product_name = n.name,
+                                            product_category_name = n.category.name,
+                                            product_price = n.price,
+                                            InStock = n.stockQty > 0
+                                        }).ToList();
+
+                foreach(var item in projection_testitems)
                 {
-                    int page_size = 5;
-                    int products_size = items.Product.Count();
-                    decimal pages_num = Math.Ceiling( (decimal) products_size / page_size);
-
-                    Console.WriteLine($"Enter The Page index you want from 1 to {pages_num} :");
-                    byte page_index = byte.Parse(Console.ReadLine());
-                    Console.WriteLine();
-
-                    var pagging = items.Product.Skip((page_index-1) * page_size).Take(page_size);
-                    foreach(var item in pagging)
-                    {
-                        Console.WriteLine(item.name    , item.price);
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine($"Do you Want another pagging Y or N ? :");
-                     want = Console.ReadLine();
-                    Console.Clear();
+                    Console.WriteLine($"{item.product_id,-5} {item.product_name,-14} {item.product_category_name,-8} {item.product_price,-9} {item.InStock}");
                 }
-                while (want=="Y");
             }
         }
     }
