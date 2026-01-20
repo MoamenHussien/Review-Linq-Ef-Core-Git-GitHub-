@@ -1,0 +1,5 @@
+﻿{
+	"ConnectionStrings": {
+		"ECommerce" :  "server=.;database=ECommerce;user id=sa;password=Moamen123@;trustservercertificate=true"
+	}
+}
