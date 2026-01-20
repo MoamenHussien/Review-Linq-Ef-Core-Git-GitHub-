@@ -14,19 +14,16 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             using (var items = new DB_Context()){
-                var eager = items.Order.Include(n => n.orderitem).ThenInclude(n => n.product);
-                foreach(var item in eager)
+
+                var q_one = items.Category.Where(n => n.name.StartsWith("ph"));
+                var q_two = items.Product.Where(n=>n.price>=500 && n.price<=5000);
+                var q_three = items.Product.OrderBy(n => n.price).ThenBy(n => n.name);
+
+
+                foreach (var item in q_three)
                 {
-                    Console.WriteLine(item.id);
-                    Console.WriteLine(item.CustomerName);
-                    foreach(var item2 in item.orderitem)
-                    {
-                        Console.WriteLine($"The id {item2.Orderid}the quantity is {item2.Qty} The Price is {item2.UnitPrice}");
-                        Console.WriteLine(item2.product.id);
-                        Console.WriteLine(item2.product.name);
-                    }
+                    Console.WriteLine($"{item.name}    {item.price}");
                 }
-                             
             }
         }
     }
