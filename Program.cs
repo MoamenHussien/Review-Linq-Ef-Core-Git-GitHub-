@@ -22,6 +22,7 @@ namespace ConsoleApp1
                 foreach (var item in product_ordered_than_5_times)
                 {
                     Console.WriteLine($"{item.productName,-9} {item.sum_ordered_product}");
+                    // for test fetch
                 }
             }
         }
