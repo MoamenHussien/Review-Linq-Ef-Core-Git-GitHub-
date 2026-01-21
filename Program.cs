@@ -15,11 +15,13 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             using (var items = new DB_Context()) {
-
-               var join_test = items.OrderItem.AsNoTracking().Select(n => new {order_id =n.Orderid,product_name =n.product.name,category_name =n.product.category.name , Subtotal=n.Qty*n.UnitPrice });
-                foreach(var item in join_test)
+                var top3_revenue = items.OrderItem.GroupBy(n => n.product.category).Select(n => new { categoryName = n.Key, Revenue = n.Sum(n=>n.Qty*n.UnitPrice) }).OrderByDescending(n => n.Revenue).Take(3);
+                var tot_paid_grait_th_10000 = items.Order.GroupBy(n => n.CustomerName).Select(n => new { customer_name = n.Key, total = n.Sum(n => n.Total) }).Where(n => n.total > 10000);
+                var product_never_ordered = items.Product.Where(n => items.OrderItem.Any(x => x.Productid == n.id)).Select(n => new { Product_id=n.id, product_name=n.name });
+                var product_ordered_than_5_times = items.OrderItem.GroupBy(n => new {n.Productid,n.product.name}).Select(n => new { sum_ordered_product = n.Sum(n=>n.Qty),productName =n.Key.name }).Where(n => n.sum_ordered_product > 2);
+                foreach (var item in product_ordered_than_5_times)
                 {
-                    Console.WriteLine($"{item.order_id,-5}{item.product_name,-13} {item.category_name,-8} {item.Subtotal,-5}");
+                    Console.WriteLine($"{item.productName,-9} {item.sum_ordered_product}");
                 }
             }
         }
